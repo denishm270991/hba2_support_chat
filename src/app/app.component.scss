@@ -1,0 +1,146 @@
+#chat{
+    main> * {
+        background-color: rgb(32, 44, 51); ;
+        padding: 5px;
+        font-size: 1rem;
+        color: whitesmoke;
+    }
+    
+    .li-list-users{
+        border-bottom: 0.1rem solid rgb(71, 83, 90);
+        padding: 5px;
+        display: flex;
+        &.active{
+            background-color: rgb(71, 83, 90);
+        } 
+        &:hover{
+            background-color: rgb(71, 83, 90);
+            cursor: pointer;
+        }
+    }
+        
+    .name-users{
+        margin-bottom: 0;
+        margin-top: 7px;
+        margin-left: 3px;
+    }
+    ul{
+       list-style: none;padding-left: 0;
+    }
+    
+    header {
+        i{
+            margin: 5px;
+            &.show{
+                display: inline-block;
+            }
+            &.hide{
+                display: none;
+            }
+        }
+    }
+
+    .list-messages li{
+        width: 100% !important;  
+        .content-message{
+            padding: 5px;
+            width: 90%;
+            margin-bottom: 7px;
+            border-radius: 5px;
+            -webkit-border-radius: 5px;
+            -moz-border-radius: 5px;
+            -ms-border-radius: 5px;
+            -o-border-radius: 5px;
+            &.receive{
+                background-color: rgb(71, 83, 90);   
+                float: left;
+            }   
+            &.sent{
+                background-color: rgb(21, 163, 168);
+                float: right;
+            }
+        }   
+    }
+    
+    aside{
+        height: 90vh;
+    }
+    
+    article{
+        height: 81vh;
+    }
+
+    .icon-send, .icon-user-on-list{
+        font-size: 2rem; 
+        color: rgb(21, 163, 168); 
+        margin-top: 3px;
+    }
+
+    footer{
+        .icon-send:hover{
+            cursor: pointer;
+        }
+    }
+    
+    // defino el grid container
+    main.normal-view {
+        display: grid;
+        grid-gap: 3px;   
+        grid-template-areas:
+        "header header header"
+        "izquierda contenido contenido"
+        "izquierda footer footer"; 
+    }
+    
+    main.movil-view-to-write {
+        grid-template-areas:
+            "header header header"
+            "contenido contenido contenido"
+            "footer footer footer";
+    }
+
+    .container-icon-send{
+        padding-left: 0;
+    }
+    
+    @media(max-width: 470px){
+        article, footer {
+            display: none;
+        }
+        main.normal-view { 
+            grid-template-areas:
+            "header header header"
+            "izquierda izquierda izquierda"
+            "izquierda izquierda izquierda";
+        }
+        main.chat-view-to-write { 
+            aside {
+                display: none;
+            }
+            article, footer {
+                display: block;
+            }
+            grid-template-areas:
+            "header header header"
+            "contenido contenido contenido"
+            "footer footer footer";
+        }
+    }
+    
+    // nombro los elementos
+    header {
+        grid-area: header;
+    }
+    
+    aside {
+        grid-area: izquierda;
+    }
+    
+    article {
+        grid-area: contenido;
+    }
+    
+    footer {
+        grid-area: footer;
+    }
+}
