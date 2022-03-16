@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, AfterViewChecked, ElementRef, ViewChild, OnInit } from '@angular/core';
 
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
@@ -11,6 +11,7 @@ import { initializeApp } from "firebase/app"
 
 import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
 import { UserI } from './interfaces/user';
+import { MessageI } from './interfaces/message';
 
 
 
@@ -35,7 +36,22 @@ const firebaseConfig = {
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent  {
+  // @ViewChild('scrollMe') private myScrollContainer: ElementRef = {};
+
+//   ngOnInit() { 
+//     this.scrollToBottom();
+// }
+
+// ngAfterViewChecked() {        
+//     this.scrollToBottom();        
+// } 
+
+// scrollToBottom(): void {
+//     try {
+//         this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight;
+//     } catch(err) { }                 
+// }
 
   title = 'HBA | Support chat';
   classChat: string;
@@ -43,6 +59,7 @@ export class AppComponent {
   titleChat: string;
   message: string;
   firebaseApp: any;
+  uidSelected: string;
 
   user = {
     uid: 1,
@@ -51,10 +68,10 @@ export class AppComponent {
   }
 
   users: UserI[];
-  messages: string[];
+  messages: MessageI[];
 
   constructor() {
-    this.messages = ['Como compro una casa', 'Que debo hacer, necesito orientacion', 'Hola esta??'];
+    this.messages = [];
     this.classChat = "normal-view";
     this.classChatHeaderI = 'fa fa-long-arrow-left hide';
     this.titleChat = 'Chat Support';
@@ -62,7 +79,7 @@ export class AppComponent {
     firebase.initializeApp(firebaseConfig);
     this.firebaseApp = initializeApp(firebaseConfig);
     this.users = [];
-    // this.getMessages();
+    this.uidSelected = '';
     this.getUsers();
   }
 
@@ -71,39 +88,38 @@ export class AppComponent {
     const q = query(collection(db, "users"));
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
-      console.log(doc.data());
       this.users.push(doc.data() as UserI);
     });
   }
+
   getMessages() {
     let messagesRef = firebase.database().ref('messages');
     messagesRef.on("value", (snap) => {
       var data = snap.val();
-      console.log(data);
-      // console.log(this.user);
-      // this.messages = [];
-      // for (var key in data) {
-      //   if (data[key].user_sender === this.user.uid || data[key].user_receive === this.user.uid) {
-      //     this.messages.push(data[key]);
-      //   }
-      // }
+      this.messages = [];
+      for (var key in data) {
+        if (data[key].user_sender === this.uidSelected || data[key].user_receive === this.uidSelected) {
+          this.messages.push(data[key]);
+        }
+    
+      }
     });
   }
 
-  toActiveUser(displayName: string) {
+  toActiveUser(uid: string) {
     let widthScreen = window.innerWidth;
-    console.log(widthScreen);
     if (widthScreen <= 470) {
       this.classChat = "chat-view-to-write";
       this.classChatHeaderI = 'fa fa-long-arrow-left show';
-      this.titleChat = displayName;
-    } else {
-      for (let i = 0; i < this.users.length; i++) {
-        if (this.users[i].displayName === displayName) {
-          this.users[i].chatActive = true;
-        } else {
-          this.users[i].chatActive = false;
-        }
+    }
+    for (let i = 0; i < this.users.length; i++) {
+      if (this.users[i].uid === uid) {
+        this.users[i].chatActive = true;
+        this.uidSelected = this.users[i].uid;
+        this.titleChat = this.users[i].displayName;
+        this.getMessages();
+      } else {
+        this.users[i].chatActive = false;
       }
     }
   }
@@ -116,9 +132,19 @@ export class AppComponent {
 
   sendMessage() {
     if (this.message != '') {
-      console.log(this.message);
-      // TODO save message on firebase
-      this.message = '';
+      var messagesRef = firebase.database().ref().child("messages");
+      messagesRef.push({
+        content: this.message,
+        user_sender: 'support',
+        user_receive: this.uidSelected,
+        displayName: 'Team Support'
+      });
+      this.message = "";
+      var objDiv = document.getElementById("your_div");
+      if(objDiv){
+          objDiv.scrollTop = objDiv.scrollHeight;
+      }
+    
     }
   }
 

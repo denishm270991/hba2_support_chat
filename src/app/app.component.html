@@ -6,30 +6,18 @@
     </header>
 
     <aside>
-      <ul>
+      <ul class="list-messages" id="your_div" #scrollMe style="overflow: scroll; height: xyz;">
         <li class="li-list-users" *ngFor="let user of users" [ngClass]="(user.chatActive)? 'active' : ''">
           <i class="fa fa-user-circle-o icon-user-on-list"></i>
-          <p class="name-users" (click)="toActiveUser(user.displayName)">{{user.displayName}}</p>
+          <p class="name-users" (click)="toActiveUser(user.uid)">{{user.displayName}}</p>
         </li>
       </ul>
     </aside>
 
     <article>
       <ul class="list-messages">
-        <li>
-          <p class="content-message receive">Como compro una casa</p>
-        </li>
-        <li>
-          <p class="content-message sent">Observa el vide de presentacion, ahi se lo explicamos todo, saludos</p>
-        </li>
-        <li>
-          <p class="content-message receive">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Temporibus fugit,
-            saepe quam voluptates eum ducimus dolor consequatur reprehenderit eaque? Saepe consequuntur magnam
-            laudantium
-            natus earum doloribus expedita quas ipsam voluptatem.</p>
-        </li>
-        <li>
-          <p class="content-message sent">Saludos</p>
+        <li *ngFor="let m of messages">
+          <p [ngClass]="(m.user_sender === 'support')? 'content-message sent' : 'content-message receive'">{{m.content}}</p>
         </li>
       </ul>
     </article>
